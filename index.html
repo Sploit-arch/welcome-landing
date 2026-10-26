@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#09090d">
   <meta name="description" content="Personal profile website">
+  <link rel="preload" href="site-music.mp3" as="audio" type="audio/mpeg">
   <title>ItsSploited exploit host</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -452,7 +453,7 @@
     <div>Credits: ItsSploited</div>
   </footer>
 
-  <audio id="site-music" src="site-music.mp3" autoplay loop preload="auto" hidden style="display:none !important; width:0; height:0;" aria-hidden="true" tabindex="-1"></audio>
+  <audio id="site-music" src="site-music.mp3" autoplay loop preload="auto" playsinline hidden style="display:none !important; width:0; height:0;" aria-hidden="true" tabindex="-1"></audio>
 
 <script>
 (() => {
@@ -548,7 +549,13 @@
   const audio = document.getElementById('site-music');
   if (!audio) return;
   audio.volume = 0.35;
-  const play = () => audio.play().catch(() => {});
+  const play = () => {
+    if (audio.paused) {
+      const attempt = audio.play();
+      if (attempt && typeof attempt.catch === 'function') attempt.catch(() => {});
+    }
+  };
+  // Start immediately during initial parsing; preload hints let the browser fetch audio sooner.
   play();
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden && audio.paused) play();
